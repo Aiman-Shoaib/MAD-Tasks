@@ -1,297 +1,110 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class Chat {
-  final String sender;
-  final String message;
-  final DateTime timestamp;
-  final String profile;
-  final bool isdelivered;
-  final bool isread;
-  final String call;
-
-  Chat(
-      {required this.sender,
-      required this.message,
-      required this.timestamp,
-      required this.profile,
-      required this.isdelivered,
-      required this.isread,
-      required this.call});
-}
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: const MyHomePage(),
+      home: MultiFunctionScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
+class MultiFunctionScreen extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MultiFunctionScreenState createState() => _MultiFunctionScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  final List<Chat> chats = [
-    Chat(
-        sender: "Hamna",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/woman.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "Zee",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/beauty.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "Aisha",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/businesswoman.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "muneeba",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/moon.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "B J W",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/icon.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "Wajii",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/waji.png',
-        call: "outgoing",
-        isdelivered: false,
-        isread: false),
-    Chat(
-        sender: "ahmed",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/boy.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: false),
-    Chat(
-        sender: "Friends",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/friends.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: true),
-    Chat(
-        sender: "Afia",
-        message: "Hello!",
-        timestamp: DateTime.now(),
-        profile: 'images/mountain.png',
-        call: "outgoing",
-        isdelivered: true,
-        isread: false),
-  ];
+class _MultiFunctionScreenState extends State<MultiFunctionScreen> {
+  String cityName = "";
+  String weatherData = "";
+  List<Map<String, String>> _photoData = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.add_a_photo)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.more_vert_outlined)),
-        ],
-        title: const Text('Whatsapp'),
-        bottom: TabBar(controller: _tabController, tabs: const [
-          Tab(
-            icon: Icon(Icons.group),
-          ),
-          Tab(
-            text: 'chats',
-          ),
-          Tab(
-            text: 'status',
-          ),
-          Tab(
-            text: 'calls',
-          ),
-        ]),
+        title: Text('Pic from API'),
       ),
-      drawer: Drawer(
-          child: ListView(
-        children: const [
-          UserAccountsDrawerHeader(
-            accountName: Text('Aiman'),
-            accountEmail: Text('aiman@gmail.com'),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              backgroundImage: AssetImage("images/letter-a.png"),
-            ),
+      body: Column(
+        children: [
+          // Weather App
+          const SizedBox(
+            height: 10,
           ),
-          ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+          // Photo Viewer
+          const Text("Fetching Image Data From JSON-Place-Holder",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(
+            height: 10,
           ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Account info'),
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-          ),
-        ],
-      )),
-      body: Center(
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            Image.asset('images/community.png'), //tab1 content
-            ListView.builder(
-              //tab2 content
-              itemCount: chats.length,
-              itemBuilder: (context, index) {
-                final chat = chats[index];
-                return ListTile(
-                  leading:
-                      CircleAvatar(backgroundImage: AssetImage(chat.profile)),
-                  title: Text(chat.sender),
-                  subtitle: Row(
-                    children: [
-                      if (chat.isread)
-                        const Icon(
-                          Icons.done_all,
-                          size: 16,
-                          color: Colors.blue,
-                        )
-                      else if (chat.isdelivered)
-                        const Icon(
-                          Icons.done_all,
-                          size: 16,
-                          color: Colors.grey,
-                        )
-                      else
-                        const SizedBox.shrink(),
-                      const SizedBox(
-                        width: 2,
-                      ),
-                      Text(chat.message),
-                    ],
-                  ),
-                  trailing: Text(
-                    "${chat.timestamp.hour}:${chat.timestamp.minute}",
-                  ),
-                );
-              },
-            ),
-            GridView.builder(
-                //tab3 content
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 4.0,
-                  mainAxisSpacing: 4.0,
-                ),
-                itemCount: chats.length,
-                itemBuilder: (context, index) {
-                  final chatt = chats[index];
-
-                  return Card(
-                    color: Colors.blueGrey,
-                    child: Center(
-                      child: Text(chatt.message),
-                    ),
+          Expanded(
+            child: FutureBuilder(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(
+                      child: Text('Error: Unable to fetch photo data'));
+                } else {
+                  return ListView.builder(
+                    itemCount: _photoData.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading:
+                            Image.network(_photoData[index]['thumbnailUrl']!),
+                        title: Text(_photoData[index]['title']!),
+                      );
+                    },
                   );
-                }),
-            ListView.builder(
-              //tab4 content
-              itemCount: chats.length,
-              itemBuilder: (context, index) {
-                final chat = chats[index];
-                return ListTile(
-                  leading:
-                      CircleAvatar(backgroundImage: AssetImage(chat.profile)),
-                  title: Text(chat.sender),
-                  subtitle: Row(
-                    children: [
-                     const  Icon(
-                        Icons.arrow_outward,
-                        size: 16,
-                        color: Colors.green,
-                      ),
-                      Text(chat.call),
-                    ],
-                  ),
-                  trailing: Text(
-                    "${chat.timestamp.hour}:${chat.timestamp.minute}",
-                  ),
-                );
+                }
               },
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff239c62),
-        hoverColor: Colors.greenAccent,
-        tooltip: "Chat",
-        child: const Icon(Icons.chat_rounded),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text('loading'),
-            duration: const Duration(milliseconds: 3000),
-            action: SnackBarAction(
-                label: 'undo', textColor: Colors.white, onPressed: () {}),
-          ));
-        },
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> fetchWeatherData() async {
+    final apiKey = 'e6ceee8fa704f2698c55c294d93a6b86';
+    final apiUrl =
+        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$apiKey';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final temperature = (data['main']['temp'] - 273.15).toStringAsFixed(1);
+      final description = data['weather'][0]['description'];
+      setState(() {
+        weatherData = 'Temperature: $temperature°C\nDescription: $description';
+      });
+    } else {
+      setState(() {
+        weatherData = 'Error: Unable to fetch weather data';
+      });
+    }
+  }
+
+  Future<void> fetchData() async {
+    final response = await http
+        .get(Uri.parse("https://jsonplaceholder.typicode.com/photos"));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      for (var item in jsonData) {
+        _photoData.add({
+          'thumbnailUrl': item['thumbnailUrl'],
+          'title': item['title'],
+        });
+      }
+    } else {
+      throw Exception('Unable to fetch photo data');
+    }
   }
 }
